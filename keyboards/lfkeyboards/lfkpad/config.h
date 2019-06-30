@@ -30,18 +30,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DIODE_DIRECTION COL2ROW
 #define MATRIX_ROWS 6
 #define MATRIX_COLS 4
-#define MATRIX_ROW_PINS { D5, F4, F6, F7, C7, C6}
-#define MATRIX_COL_PINS { F1, F0, D4, D6}
+#define MATRIX_ROW_PINS { B0, B7, D2, D3, D5, D4}
+#define MATRIX_COL_PINS { B6, B5, D7, B4}
 #define UNUSED_PINS { }
-#define RGBLED_NUM 28     // Number of LEDs
+// #define RGBLED_NUM 28     // Number of LEDs
+// 
+// #define RGB_DI_PIN C7  // Have to set it to something to get the ws2812 code to compile
+// #define RGBLIGHT_ANIMATIONS
+// #define RGBLIGHT_HUE_STEP 10
+// #define RGBLIGHT_SAT_STEP 17
+// #define RGBLIGHT_VAL_STEP 17
+// 
+// #define TAPPING_TERM 200
+//
 
-#define RGB_DI_PIN C7  // Have to set it to something to get the ws2812 code to compile
-#define RGBLIGHT_ANIMATIONS
-#define RGBLIGHT_HUE_STEP 10
-#define RGBLIGHT_SAT_STEP 17
-#define RGBLIGHT_VAL_STEP 17
-
-#define TAPPING_TERM 200
+#define DRIVER_ADDR_1 0b1110100
+#define DRIVER_ADDR_2 0b0000000
+#define DRIVER_COUNT 2
+#define DRIVER_1_LED_TOTAL 21
+#define DRIVER_LED_TOTAL DRIVER_1_LED_TOTAL
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
 #define DEBOUNCING_DELAY 5
@@ -52,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* number of backlight levels */
 
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
-#define LOCKING_SUPPORT_ENABLE
+// #define LOCKING_SUPPORT_ENABLE
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
 

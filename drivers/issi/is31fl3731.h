@@ -33,6 +33,7 @@ extern const is31_led g_is31_leds[DRIVER_LED_TOTAL];
 
 void IS31FL3731_init( uint8_t addr );
 void IS31FL3731_write_register( uint8_t addr, uint8_t reg, uint8_t data );
+uint8_t IS31FL3731_read_register( uint8_t addr, uint8_t reg );
 void IS31FL3731_write_pwm_buffer( uint8_t addr, uint8_t *pwm_buffer );
 
 void IS31FL3731_set_color( int index, uint8_t red, uint8_t green, uint8_t blue );

@@ -28,9 +28,27 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define PRODUCT         GH60
 #define DESCRIPTION     t.m.k. keyboard firmware for GH60
 
+#define RGB_DI_PIN F7
+#define RGBLED_NUM 6
+#define RGBLIGHT_LED_MAP {0, 2, 4, 5, 3, 1}
+
 /* key matrix size */
 #define MATRIX_ROWS 5
 #define MATRIX_COLS 14
+
+#define RGBLIGHT_EFFECT_RESTING
+#define RGBLIGHT_EFFECT_RESTING_WORK_TIME 50 * 60
+#define RGBLIGHT_EFFECT_RESTING_IDLE_TIME  3 * 60
+#define RGBLIGHT_EFFECT_RESTING_REST_TIME 10 * 60
+#define RGBLIGHT_EFFECT_RESTING_BEGIN_HUE 176
+#define RGBLIGHT_EFFECT_RESTING_BEGIN_SAT 200
+#define RGBLIGHT_EFFECT_RESTING_BEGIN_VAL 100
+#define RGBLIGHT_EFFECT_RESTING_END_HUE   302
+#define RGBLIGHT_EFFECT_RESTING_END_SAT   100
+#define RGBLIGHT_EFFECT_RESTING_END_VAL   150
+#define RGBLIGHT_EFFECT_RESTING_COLOR_SPECTURM_HUE_DEGREE 60
+#define RGBLIGHT_EFFECT_RESTING_BREATH_WHEN_TIRED
+
 
 /*
  * Keyboard Matrix Assignments
@@ -62,9 +80,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define BACKLIGHT_LEVELS 3
 
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
-#define LOCKING_SUPPORT_ENABLE
+// #define LOCKING_SUPPORT_ENABLE
 /* Locking resynchronize hack */
-#define LOCKING_RESYNC_ENABLE
+// #define LOCKING_RESYNC_ENABLE
 
 /*
  * Force NKRO
@@ -141,10 +159,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /* disable debug print */
-//#define NO_DEBUG
+// #define NO_DEBUG
 
 /* disable print */
-//#define NO_PRINT
+// #define NO_PRINT
 
 /* disable action features */
 //#define NO_ACTION_LAYER

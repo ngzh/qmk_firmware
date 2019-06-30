@@ -689,6 +689,11 @@ void rgblight_task(void) {
       rgblight_effect_alternating();
     }
 #endif
+#ifdef RGBLIGHT_EFFECT_RESTING
+    else if (rgblight_config.mode == RGBLIGHT_MODE_RESTING){
+      rgblight_effect_resting();
+    }
+#endif
   }
 }
 
@@ -875,6 +880,128 @@ void rgblight_effect_christmas(void) {
     sethsv(hue, rgblight_config.sat, rgblight_config.val, (LED_TYPE *)&led[i]);
   }
   rgblight_set();
+}
+#endif
+
+extern uint32_t last_keyrecord_time_ms;
+
+#ifdef RGBLIGHT_EFFECT_RESTING
+/* CONFIGS
+RGBLIGHT_EFFECT_RESTING_WORK_TIME  (in sec)
+RGBLIGHT_EFFECT_RESTING_REST_TIME  (in sec)
+RGBLIGHT_EFFECT_RESTING_BEGIN_HUE;  0 - 360
+RGBLIGHT_EFFECT_RESTING_BEGIN_SAT;  0 - 255
+RGBLIGHT_EFFECT_RESTING_BEGIN_VAL;  0 - 255
+RGBLIGHT_EFFECT_RESTING_END_HUE  ;  0 - 360
+RGBLIGHT_EFFECT_RESTING_END_SAT  ;  0 - 255
+RGBLIGHT_EFFECT_RESTING_END_VAL  ;  0 - 255
+*/
+
+void rgblight_effect_resting(void) {
+    /*
+      this function contains two parts of logic
+      1. judge whether in work/idle/rest mode and +/=/- tired rate
+      2. display tired rate
+    */
+    static uint16_t tired_rate = 0;  // from 0 to 255
+    // 16 bit counter is not enough, only 65 sec before wrap
+
+    // process new keyrecord event
+    uint32_t keyrecord_interval_ms =
+        timer_elapsed32(last_keyrecord_time_ms);
+
+    // update current work_idle_rest_mode
+    int8_t work_idle_rest_mode = 0;  // default mode: idle
+    if (keyrecord_interval_ms <= 1 * 1000L) {
+        // work
+        work_idle_rest_mode = 1;
+    } else if (keyrecord_interval_ms <=
+               RGBLIGHT_EFFECT_RESTING_IDLE_TIME * 1000L) {
+        // idle
+        work_idle_rest_mode = 0;
+    } else {
+        // rest
+        work_idle_rest_mode = -1;
+    }
+
+    // update tired rate
+    static uint32_t last_tired_rate_update_time_ms = 0;
+    bool tired_rate_updated = false;
+    if ((work_idle_rest_mode > 0) &&
+        (timer_elapsed32(last_tired_rate_update_time_ms) >
+         RGBLIGHT_EFFECT_RESTING_WORK_TIME * 1000L / 256) &&
+        (tired_rate < 255)) {
+        tired_rate += 1;
+        last_tired_rate_update_time_ms = timer_read32();
+        tired_rate_updated = true;
+    } else if ((work_idle_rest_mode < 0) &&
+               (timer_elapsed32(last_tired_rate_update_time_ms) >
+                RGBLIGHT_EFFECT_RESTING_REST_TIME * 1000L / 256) &&
+               (tired_rate > 0)) {
+        tired_rate -= 1;
+        last_tired_rate_update_time_ms = timer_read32();
+        tired_rate_updated = true;
+    }
+
+    // interpolate given begin/end HSV color by tired_rate
+    static bool first_run = true;  // workaround for keyboard init
+    if (tired_rate_updated || first_run
+#ifdef RGBLIGHT_EFFECT_RESTING_BREATH_WHEN_TIRED
+        || tired_rate == 255
+#endif
+        ) {
+        first_run = false;
+
+        // turn tired rate and start/end(h,s,v) color to a specific color
+        // interpolate start(h,s,v) and  end(h,s,v) by rate
+
+        // normalize user config
+        const uint16_t b_hue  = MAX(0, MIN(360, RGBLIGHT_EFFECT_RESTING_BEGIN_HUE));
+        const uint16_t b_sat  = MAX(0, MIN(255, RGBLIGHT_EFFECT_RESTING_BEGIN_SAT));
+        const uint16_t b_val  = MAX(0, MIN(255, RGBLIGHT_EFFECT_RESTING_BEGIN_VAL));
+        const uint16_t e_hue  = MAX(0, MIN(360, RGBLIGHT_EFFECT_RESTING_END_HUE  ));
+        const uint16_t e_sat  = MAX(0, MIN(255, RGBLIGHT_EFFECT_RESTING_END_SAT  ));
+        const uint16_t e_val  = MAX(0, MIN(255, RGBLIGHT_EFFECT_RESTING_END_VAL  ));
+
+        uint16_t hue_delta = e_hue - b_hue + (((e_hue - b_hue < 180) ||
+                                               (e_hue - b_hue > -180)) ? 0 :
+                                              (e_hue - b_hue < 0)      ? 360 :
+                                              -360);
+        uint16_t hue = ((hue_delta) * tired_rate / 256 + b_hue) % 360;
+        uint16_t sat = (e_sat - b_sat) * tired_rate / 256 + b_sat;
+
+        uint16_t val = (e_val - b_val) * tired_rate / 256 + b_sat;
+
+#ifdef RGBLIGHT_EFFECT_RESTING_BREATH_WHEN_TIRED
+        static int8_t pos = 0;
+        if ((tired_rate == 255)) {
+            static uint16_t last_breating_time_ms = 0;
+            if (timer_elapsed(last_breating_time_ms) < 50) { return; }
+            last_breating_time_ms = timer_read();
+
+            val = (uint16_t)((float)(val) *
+                (1.3f * 127.0f +
+                 0.7f * (128.0f * cos(pos / 128.0f * M_PI))) / 256.0f);
+            pos = (pos + 1);
+        } else {
+            // reset pos so that next breathing effect will start from full val
+            pos = 0;
+        }
+#endif
+
+        for (int i = 0; i < RGBLED_NUM; i++) {
+            #ifdef RGBLIGHT_EFFECT_RESTING_COLOR_SPECTURM_HUE_DEGREE
+            const int deg = RGBLIGHT_EFFECT_RESTING_COLOR_SPECTURM_HUE_DEGREE;
+
+            sethsv((hue - deg / 2 + i * (deg / (RGBLED_NUM - 1))) % 360,
+                   sat, val, (LED_TYPE *)&led[i]);
+            #else
+            sethsv(hue, sat, val, (LED_TYPE *)&led[i]);
+            #endif
+        }
+
+        rgblight_set();
+    }
 }
 #endif
 

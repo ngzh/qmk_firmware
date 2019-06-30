@@ -215,11 +215,15 @@ static uint16_t scs_timer[2] = {0, 0};
  */
 static bool grave_esc_was_shifted = false;
 
+uint32_t last_keyrecord_time_ms = 0;
+
 bool process_record_quantum(keyrecord_t *record) {
 
   /* This gets the keycode from the key pressed */
   keypos_t key = record->event.key;
   uint16_t keycode;
+
+  last_keyrecord_time_ms = timer_read32();
 
   #if !defined(NO_ACTION_LAYER) && !defined(STRICT_LAYER_RELEASE)
     /* TODO: Use store_or_get_action() or a similar function. */

@@ -28,6 +28,9 @@
 #include "i2c_master.h"
 #include "progmem.h"
 
+
+#include "debug.h"
+
 // This is a 7-bit address, that gets left-shifted and bit 0
 // set to 0 for write, 1 for read (as per I2C protocol)
 // The address will vary depending on your wiring:
@@ -192,7 +195,6 @@ void IS31FL3731_init( uint8_t addr )
     // most usage after initialization is just writing PWM buffers in bank 0
     // as there's not much point in double-buffering
     IS31FL3731_write_register( addr, ISSI_COMMANDREGISTER, 0 );
-
 }
 
 void IS31FL3731_set_color( int index, uint8_t red, uint8_t green, uint8_t blue )

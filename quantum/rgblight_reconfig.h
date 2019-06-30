@@ -26,7 +26,8 @@
     defined(RGBLIGHT_EFFECT_KNIGHT) ||		\
     defined(RGBLIGHT_EFFECT_CHRISTMAS) ||	\
     defined(RGBLIGHT_EFFECT_RGB_TEST) ||	\
-    defined(RGBLIGHT_EFFECT_ALTERNATING)
+    defined(RGBLIGHT_EFFECT_ALTERNATING) || \
+    defined(RGBLIGHT_EFFECT_RESTING)
   #define RGBLIGHT_USE_TIMER
   #ifndef RGBLIGHT_ANIMATIONS
     #define RGBLIGHT_ANIMATIONS  // for backward compatibility

@@ -233,6 +233,8 @@ void rgblight_effect_knight(uint8_t interval);
 void rgblight_effect_christmas(void);
 void rgblight_effect_rgbtest(void);
 void rgblight_effect_alternating(void);
+void rgblight_effect_resting(void);
+
 
 #endif // #ifndef RGBLIGHT_H_DUMMY_DEFINE
 #endif // RGBLIGHT_H
@@ -292,6 +294,10 @@ void rgblight_effect_alternating(void);
   #ifdef RGBLIGHT_EFFECT_ALTERNATING
     _RGBM_SINGLE_DYNAMIC( ALTERNATING )
   #endif
+  #ifdef RGBLIGHT_EFFECT_RESTING
+     _RGBM_SINGLE_DYNAMIC( RESTING )
+  #endif
+
   ////  Add a new mode here.
   // #ifdef RGBLIGHT_EFFECT_<name>
   //    _RGBM_<SINGLE|MULTI>_<STATIC|DYNAMIC>( <name> )
